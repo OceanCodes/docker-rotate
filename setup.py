@@ -2,13 +2,13 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '2.0.1'
+__version__ = '2.1'
 
 __build__ = ''
 
 setup(name='dockerrotate',
       version=__version__ + __build__,
-      description='Docker image rotation tool',
+      description='Docker clenaup tool',
       author='Location Labs',
       author_email='info@locationlabs.com',
       url='http://locationlabs.com',
@@ -17,8 +17,8 @@ setup(name='dockerrotate',
           'nose>=1.3.7',
       ],
       install_requires=[
-          'docker-py>=1.6.0',
-          'python-dateutil>=2.4.0',
+          'docker>=2.4.2',
+          'python-dateutil>=2.6.1',
       ],
       tests_require=[
           'mock',

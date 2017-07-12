@@ -5,8 +5,6 @@ import re
 
 from docker.errors import APIError
 
-from dockerrotate.filter import include_image
-
 
 TIME_REGEX = re.compile(r'((?P<days>\d+?)d)?((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?')  # noqa
 
@@ -30,21 +28,21 @@ def include_container(container, args):
     """
     Return truthy if container should be removed.
     """
-    inspect_data = args.client.inspect_container(container["Id"])
-    status = inspect_data["State"]["Status"]
+    attrs = args.client.containers.get(container.id).attrs
+    status = attrs["State"]["Status"]
 
     if status == "exited":
-        finished_at = parser.parse(inspect_data["State"]["FinishedAt"])
+        finished_at = parser.parse(attrs["State"]["FinishedAt"])
         if (args.now - finished_at) < args.exited_ts:
             return False
     elif status == "created":
-        created_at = parser.parse(inspect_data["Created"])
+        created_at = parser.parse(attrs["Created"])
         if (args.now - created_at) < args.created_ts:
             return False
     else:
         return False
 
-    return include_image([container["Image"]], args)
+    return True
 
 
 def clean_containers(args):
@@ -59,24 +57,24 @@ def clean_containers(args):
     args.now = datetime.now(tzutc())
 
     containers = [
-        container for container in args.client.containers(all=True)
+        container for container in args.client.containers.list(all=True)
         if include_container(container, args)
     ]
 
     for container in containers:
         print "Removing container ID: {}, Name: {}, Image: {}".format(
-            container["Id"],
-            (container.get("Names") or ["N/A"])[0],
-            container["Image"],
+            container.id,
+            container.name,
+            container.image,
         )
 
         if args.dry_run:
             continue
 
         try:
-            args.client.remove_container(container["Id"])
+            container.remove()
         except APIError as error:
             print "Unable to remove container: {}: {}".format(
-                container["Id"],
+                container.id,
                 error,
             )

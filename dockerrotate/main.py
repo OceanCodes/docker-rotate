@@ -60,6 +60,9 @@ def parse_args():
         help="Remove only containers that where created (but not running) that long ago",
     )
     containers_parser.add_argument(
+        "--dead",
+        default="1m",
+        help="Remove \"dead\" containers that finished at least this long ago",
     )
 
     return parser.parse_args()

@@ -39,6 +39,10 @@ def include_container(container, args):
         created_at = parser.parse(attrs["Created"])
         if (args.now - created_at) < args.created_ts:
             return False
+    elif status == "dead":
+        finished_at = parser.parse(attrs["State"]["FinishedAt"])
+        if (args.now - finished_at) < args.dead:
+            return False
     else:
         return False
 
@@ -54,6 +58,7 @@ def clean_containers(args):
     """
     args.exited_ts = parse_time(args.exited)
     args.created_ts = parse_time(args.created)
+    args.dead_ts = parse_time(args.dead)
     args.now = datetime.now(tzutc())
 
     containers = [

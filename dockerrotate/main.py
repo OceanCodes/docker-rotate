@@ -72,10 +72,9 @@ def make_client(args):
     """
     Create a Docker client.
     """
-    kwargs = {}
-
-    if args.client_version:
-        kwargs["version"] = args.client_version
+    kwargs = {
+        "version": args.client_version or "auto",
+    }
 
     client = DockerClient.from_env(**kwargs)
 

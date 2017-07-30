@@ -67,10 +67,15 @@ def clean_containers(args):
     ]
 
     for container in containers:
+        try:
+            image = container.image
+        except:
+            image = 'N/A'
+
         print "Removing container ID: {}, Name: {}, Image: {}".format(
             container.id,
             container.name,
-            container.image,
+            image,
         )
 
         if args.dry_run:

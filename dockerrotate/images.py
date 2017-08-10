@@ -46,8 +46,11 @@ def clean_images(args):
 
             try:
                 args.client.images.remove(image.id, force=True, noprune=False)
-            except APIError as error:
-                print error.message
+            except APIError as ex:
+                error = str(ex)
+                # ignore failure to remove image as a result of running container
+                if 'running container' not in error:
+                    print error
 
 
 def normalize_tag_name(tag):

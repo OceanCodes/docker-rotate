@@ -36,21 +36,24 @@ def clean_images(args):
 
         # delete
         for image in images_to_delete:
+            tags = filter(lambda tag: image_name in tag, image.tags)
+
             print "Removing image ID: {}, Tags: {}".format(
                 image.id,
-                ", ".join(image.tags)
+                ", ".join(tags)
             )
 
             if args.dry_run:
                 continue
 
-            try:
-                args.client.images.remove(image.id, force=True, noprune=False)
-            except APIError as ex:
-                error = str(ex)
-                # ignore failure to remove image as a result of running container
-                if 'running container' not in error:
-                    print error
+            for tag in tags:
+                try:
+                    args.client.images.remove(tag)
+                except APIError as ex:
+                    error = str(ex)
+                    # ignore failure to remove image as a result of running container
+                    if 'running container' not in error:
+                        print error
 
 
 def normalize_tag_name(tag):

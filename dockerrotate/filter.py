@@ -1,16 +1,14 @@
 import re
 
 
-def include_image(image_tags, args):
+def include_tag(tag, patterns):
     """
-    Return truthy if image should be considered for removal.
+    Return truthy if image tag should be considered for removal.
     """
-    if not args.images:
+    if not patterns:
         return True
 
-    return all(regex_match(pattern, tag)
-               for pattern in args.images
-               for tag in image_tags)
+    return all(regex_match(pattern, tag) for pattern in patterns)
 
 
 def regex_match(pattern, tag):

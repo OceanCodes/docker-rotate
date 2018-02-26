@@ -40,8 +40,9 @@ def clean_images(args):
                 args.client.images.remove(tag[0])
             except APIError as ex:
                 error = str(ex)
-                # ignore failure to remove image as a result of running container
-                if 'running container' not in error:
+                # ignore failure to remove image as a result of a running container
+                if ('running container' not in error and
+                        'is using its referenced image' not in error):
                     print error
 
 

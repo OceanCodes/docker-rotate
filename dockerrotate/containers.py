@@ -28,7 +28,11 @@ def include_container(container, args):
     """
     Return truthy if container should be removed.
     """
-    attrs = args.client.containers.get(container.id).attrs
+    try:
+        attrs = args.client.containers.get(container.id).attrs
+    except:
+        return False
+
     status = attrs["State"]["Status"]
 
     if status == "exited":
